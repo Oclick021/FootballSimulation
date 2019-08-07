@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FootballSim.Models;
+using FootballSim.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +22,27 @@ namespace FootballSim
     /// </summary>
     public partial class MainWindow : Window
     {
+        public Match ActiveMatch { get; set; }
         public MainWindow()
         {
             InitializeComponent();
+            Tournoment tour = new Tournoment();
+
+            MatchesDataGrid.DataContext = tour;
+        }
+
+    
+        private void StartMatchBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (MatchesDataGrid.SelectedItem is Match SelectedMatch)
+            {
+                ActiveMatch = SelectedMatch;
+                ActiveMatch.StartMatch();
+                while (ActiveMatch.MatchTime> 0)
+                {
+                    ActiveMatch.Cycle();
+                }
+            }
         }
     }
 }

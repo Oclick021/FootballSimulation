@@ -7,6 +7,25 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-       
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel>
+            <DataGrid x:Name="MatchesDataGrid" IsReadOnly="True" AutoGenerateColumns="False"   ItemsSource="{Binding Matches}">
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn Binding="{Binding MatchPlayed}" Header="Match Played"/>
+                    <DataGridTextColumn Binding="{Binding TeamHome}" Header="Team Home"></DataGridTextColumn>
+                    <DataGridTextColumn Binding="{Binding TeamGuest}" Header="Team Guest"></DataGridTextColumn>
+                    <DataGridTextColumn Binding="{Binding Result}" Header="Result"></DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+            <Button x:Name="StartMatchBtn" Margin="10" Content="Start Match" Click="StartMatchBtn_Click" />
+            <Button Margin="10" Content="Next Match"/>
+            <Button Margin="10" Content="All matches"/>
+
+        </StackPanel>
+
     </Grid>
 </Window>
