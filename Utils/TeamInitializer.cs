@@ -1,5 +1,4 @@
 ﻿using FootballSim.Models;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -11,9 +10,11 @@ using System.Threading.Tasks;
 
 namespace FootballSim.Utils
 {
+    /// <summary>
+    /// This class will make a semi random list of teams.
+    /// </summary>
     class TeamInitializer
     {
-        public static Random Rnd = new Random();
         public List<Team> Teams { get; set; }
 
 
@@ -21,55 +22,61 @@ namespace FootballSim.Utils
         {
             Teams = new List<Team>();
             Teams.Add(GetTeam("Barca FC"));
+            BoostTeam(Teams[0], 10);
             Teams.Add(GetTeam("Real Madrid"));
+            BoostTeam(Teams[1], 15);
             Teams.Add(GetTeam("Liverpool"));
-             SetTeamStroid();
+            BoostTeam(Teams[0], 5);
+            Teams.Add(GetTeam("Juventus"));
         }
+        
+        /// <summary>
+        /// Returns a Team of players
+        /// </summary>
+        /// <param name="name">Name of the team</param>
+        /// <returns></returns>
         Team GetTeam(string name)
         {
             Team team = new Team() { Name = name };
-            team.Players.Add(new Player("GoalKeeper", Rnd.Next(1, 88), Rnd.Next(18, 35), Rnd.Next(40, 100), Rnd.Next(40, 100), Rnd.Next(40, 100), new PlayerRole(PlayerRole.Position.GK)));
+            team.Players.Add(new Player($"GoalKeeper ({team.Name})", Player.Position.GK));
             for (int i = 0; i < 2; i++)
             {
-                team.Players.Add(new Player($"FB {i}", Rnd.Next(1, 88), Rnd.Next(18, 35), Rnd.Next(40, 100), Rnd.Next(40, 100), Rnd.Next(40, 100), new PlayerRole(PlayerRole.Position.FB)));
+                team.Players.Add(new Player($"FB {i} ({team.Name})", Player.Position.FB));
             }
             for (int i = 0; i < 3; i++)
             {
-                team.Players.Add(new Player($"CB {i}", Rnd.Next(1, 88), Rnd.Next(18, 35), Rnd.Next(40, 100), Rnd.Next(40, 100), Rnd.Next(40, 100), new PlayerRole(PlayerRole.Position.CB)));
+                team.Players.Add(new Player($"CB {i} ({team.Name})", Player.Position.CB));
             }
-            for (int i = 0; i < 3; i++)
+            team.Players.Add(new Player($"SP ({team.Name})", Player.Position.SP));
+            for (int i = 0; i < 2; i++)
             {
-                team.Players.Add(new Player($"CM {i}", Rnd.Next(1, 88), Rnd.Next(18, 35), Rnd.Next(40, 100), Rnd.Next(40, 100), Rnd.Next(40, 100), new PlayerRole(PlayerRole.Position.CM)));
+                team.Players.Add(new Player($"CM {i} ({team.Name})", Player.Position.CM));
             }
             for (int i = 0; i < 2; i++)
             {
-                team.Players.Add(new Player($"S {i}", Rnd.Next(1, 88), Rnd.Next(18, 35), Rnd.Next(40, 100), Rnd.Next(40, 100), Rnd.Next(40, 100), new PlayerRole(PlayerRole.Position.S)));
+                team.Players.Add(new Player($"S {i} ({team.Name})", Player.Position.S));
             }
             return team;
         }
-        void SetTeamStroid()
-        {
-            Team team = new Team() { Name = "On Stroid" };
 
-            team.Players.Add(new Player("GoalKeeper", Rnd.Next(1, 88), Rnd.Next(21, 28), Rnd.Next(70, 100), Rnd.Next(70, 100), Rnd.Next(70, 100), new PlayerRole(PlayerRole.Position.GK)));
-            for (int i = 0; i < 2; i++)
+        /// <summary>
+        /// Boosts a selected team with a selected amount of ability
+        /// </summary>
+        /// <param name="t">Team you want to boost</param>
+        /// <param name="boost">Amount of boost you want to give the players of the team</param>
+        void BoostTeam(Team t, int boost)
+        {
+            foreach (var player in t.Players)
             {
-                team.Players.Add(new Player($"FB {i}", Rnd.Next(1, 88), Rnd.Next(21, 28), Rnd.Next(70, 100), Rnd.Next(70, 100), Rnd.Next(70, 100), new PlayerRole(PlayerRole.Position.FB)));
+                player.Agility += boost;
+                player.Attack += boost;
+                player.Defence += boost;
+                player.Percision += boost;
+                player.PlayMaker += boost;
+                player.Stamina += boost;
             }
-            for (int i = 0; i < 3; i++)
-            {
-                team.Players.Add(new Player($"CB {i}", Rnd.Next(1, 88), Rnd.Next(21, 28), Rnd.Next(70, 100), Rnd.Next(70, 100), Rnd.Next(70, 100), new PlayerRole(PlayerRole.Position.CB)));
-            }
-            for (int i = 0; i < 3; i++)
-            {
-                team.Players.Add(new Player($"CM  {i}", Rnd.Next(1, 88), Rnd.Next(21, 28), Rnd.Next(70, 100), Rnd.Next(70, 100), Rnd.Next(70, 100), new PlayerRole(PlayerRole.Position.CB)));
-            }
-            for (int i = 0; i < 2; i++)
-            {
-                team.Players.Add(new Player($"S {i}", Rnd.Next(1, 88), Rnd.Next(21, 28), Rnd.Next(70, 100), Rnd.Next(70, 100), Rnd.Next(70, 100), new PlayerRole(PlayerRole.Position.S)));
-            }
-            Teams.Add(team);
         }
+
 
     }
 }

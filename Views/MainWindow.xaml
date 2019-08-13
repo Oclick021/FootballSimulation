@@ -4,28 +4,159 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FootballSim"
+        xmlns:utils="clr-namespace:FootballSim.Utils"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" SizeToContent="Width" Width="1200" >
+    <Window.Resources>
+        <utils:HomeFootballVisibility  x:Key="FootballVisibility"/>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <StackPanel>
-            <DataGrid x:Name="MatchesDataGrid" IsReadOnly="True" AutoGenerateColumns="False"   ItemsSource="{Binding Matches}">
+        <StackPanel Margin="10">
+            <Button x:Name="StartMatchBtn" Margin="10" Content="Start Match" Click="StartMatchBtn_Click" />
+            <DataGrid x:Name="MatchesDataGrid" Width="375" IsReadOnly="True" AutoGenerateColumns="False"   ItemsSource="{Binding Matches}">
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{ Binding Played}" Value="True">
+                                <Setter Property="IsEnabled" Value="False"></Setter>
+                                <Setter Property="Background" Value="Gray"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
                 <DataGrid.Columns>
-                    <DataGridCheckBoxColumn Binding="{Binding MatchPlayed}" Header="Match Played"/>
-                    <DataGridTextColumn Binding="{Binding TeamHome}" Header="Team Home"></DataGridTextColumn>
-                    <DataGridTextColumn Binding="{Binding TeamGuest}" Header="Team Guest"></DataGridTextColumn>
-                    <DataGridTextColumn Binding="{Binding Result}" Header="Result"></DataGridTextColumn>
+                    <DataGridTextColumn Width="*" Binding="{Binding TeamHome}" Header="Team Home"></DataGridTextColumn>
+                    <DataGridTextColumn  Width="*"  Binding="{Binding TeamGuest}" Header="Team Guest"></DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>
-            <Button x:Name="StartMatchBtn" Margin="10" Content="Start Match" Click="StartMatchBtn_Click" />
-            <Button Margin="10" Content="Next Match"/>
-            <Button Margin="10" Content="All matches"/>
+            <DataGrid x:Name="Results" IsReadOnly="True" AutoGenerateColumns="False"    >
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Team" Binding="{Binding Name}"/>
+
+                    <DataGridTextColumn Header="MatchPlayed" Binding="{Binding Results.MatchPlayed}"/>
+                    <DataGridTextColumn Header="W" Binding="{Binding Results.Win}"/>
+                    <DataGridTextColumn Header="L" Binding="{Binding Results.Loss}"/>
+                    <DataGridTextColumn Header="D" Binding="{Binding Results.Draws}"/>
+                    <DataGridTextColumn Header="S" Binding="{Binding Results.TotalScore}" />
+                    <DataGridTextColumn Header="R" Binding="{Binding Results.TotalRecieve}"/>
+                    <DataGridTextColumn Header="D" Binding="{Binding Results.Dif}" />
+                    <DataGridTextColumn Header="Total Points" Binding="{Binding Results.TotalPoints}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+        <StackPanel Grid.Column="1"  >
+            <Grid Margin="10" x:Name="MatchGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label x:Name="TeamHomeLbl" Content="{Binding TeamHome}" Margin="5,0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Label x:Name="TeamHomeScoreLbl" Grid.Column="1" Content="{Binding TeamHome.Score}" Margin="5,0" FontWeight="ExtraBold" FontSize="32"/>
+                <Label  Content="-" Margin="5,0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Label x:Name="GuestHomeLbl" Grid.Column="3" Content="{Binding TeamGuest.Score}" Margin="5,0" FontWeight="ExtraBold" FontSize="32"/>
+                <Label x:Name="GuestHomeScoreLbl" Grid.Column="4" Content="{Binding TeamGuest}" Margin="5,0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+
+                <DataGrid  Margin="5" Grid.Row="1" Grid.ColumnSpan="2" x:Name="HomeTeamDataGrid" AutoGenerateColumns="False" IsReadOnly="False" SelectionMode="Single">
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsInPossesion}" Value="True">
+                                    <Setter Property="Background" Value="LightBlue"></Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsDefending}" Value="True">
+                                    <Setter Property="Background" Value="#FFF06A6A"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.RowStyle>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding Name}"></DataGridTextColumn>
+
+                        <DataGridTemplateColumn  >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Path Visibility="{Binding IsDefending  , Converter={StaticResource FootballVisibility} }" Data="M26.913076,16.877954L29.945995,16.877954 29.374012,19.000006 27.371065,19.000006z M21.913076,16.877954L24.945995,16.877954 24.374012,19.000006 22.371065,19.000006z M7.5130115,16.877954L10.546052,16.877954 9.9740443,19.000006 7.9710174,19.000006z M3.2569926,16.877954L6.2900338,16.877954 5.7180262,19.000006 3.7149992,19.000006z M2.0696598,13.354006L2.0932617,13.426301C2.1800339,13.658353 2.3289104,13.878293 2.5407872,14.090921 2.7127891,14.263924 2.9407914,14.359925 3.1797938,14.359925L30.003057,14.359925 30.003057,13.354006z M9.5641599,7.9045923L3.0847931,11.199881C3.0315423,11.226881,2.9798856,11.255741,2.92994,11.286339L2.828959,11.354006 12.923133,11.354006z M12.936332,6.1895657L11.430538,6.9553857 15.714625,11.354006 18.065902,11.354006z M16.604927,4.3237844L14.810767,5.2362618 20.849681,11.317125 20.882694,11.354006 30.003057,11.354006 30.003057,7.001822C29.836055,5.7128038 29.452053,4.856792 28.942047,4.6487889 28.472042,4.4527864 27.817035,4.7697906 27.613035,4.9117928 23.917997,9.3818552 18.597946,5.7038035 16.843929,4.4887867z M20.901311,2.0876713L18.64014,3.2872915 18.769813,3.3719397C18.946558,3.4856892,19.124256,3.5966811,19.302593,3.7039342L19.328685,3.7193146 21.515346,2.5247087z M20.9321,1.9073486E-05C21.238607,-0.0015411377,21.544658,0.091314316,21.807361,0.27751732L23.324447,1.3576097C23.749471,1.660635 23.982484,2.1516771 23.952484,2.6717205 23.921482,3.189765 23.629465,3.6488037 23.173439,3.8988252L21.556804,4.782083 21.720838,4.835217C23.321254,5.3186812 24.860445,5.1414208 26.11202,3.5877743 26.425022,3.1857681 27.924037,2.2867556 29.392051,2.6927614 30.834066,3.0937672 31.709074,4.4807868 31.996076,6.8168192L32.003076,6.9388208 32.003076,15.255938C32.003076,15.864946,31.510072,16.359953,30.905067,16.359953L3.1797938,16.359953C2.4047861,16.359953 1.6737789,16.054949 1.1237738,15.501941 -0.016237646,14.357925 -0.30024046,12.893904 0.32376588,11.380883 0.66776907,10.545871 1.3287756,9.8468617 2.1827841,9.4148558L15.769344,2.5460491 20.236274,0.17550945C20.455036,0.059561729,20.693706,0.0012321472,20.9321,1.9073486E-05z"  Stretch="Uniform" Fill="#FF1D1C2C" Width="20" Height="20" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTemplateColumn  >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Path Visibility="{Binding IsInPossesion , Converter={StaticResource FootballVisibility} }" Data="M16,10.700002L21.599976,14.800001 19.5,21.300001 12.599976,21.300001 10.5,14.800001z M12.299988,2.7999997C9.0999756,3.7000012,6.3999634,5.7000017,4.5999756,8.4000024L6.5999756,8.0000009 7.0999756,13.1 3.5999756,16.999998 2.2999878,15.600004 2.2999878,15.999998C2.2999878,19.200003,3.3999634,22.100004,5.2000122,24.5L5.5,22.600004 10.399963,23.700005 13.099976,28.100006 11.299988,29C12.799988,29.5 14.399963,29.900001 16.099976,29.900001 17.799988,29.900001 19.399963,29.600006 20.899963,29L18.899963,28 21.599976,23.600006 26.5,22.499998 26.799988,24.400001C28.599976,22.100004,29.700012,19.100004,29.700012,15.9L29.700012,15.499998 28.399963,16.9 24.899963,13.000002 25.5,8.0000009 27.5,8.4000024C25.700012,5.7000017,23,3.7000012,19.799988,2.7999997L20.700012,4.5000004 16,6.5000009 11.299988,4.5000004z M16,0C24.799988,5.7852276E-08 32,7.2000017 32,15.999998 32,24.800003 24.799988,32 16,32 7.2000122,32 0,24.800003 0,15.999998 0,7.2000017 7.2000122,5.7852276E-08 16,0z" Stretch="Uniform" Fill="#FF1D1C2C" Width="20" Height="20" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <DataGrid x:Name="GuestTeamDataGrid" Margin="5" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" AutoGenerateColumns="False" IsReadOnly="False" SelectionMode="Single">
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsInPossesion}" Value="True">
+                                    <Setter Property="Background" Value="LightBlue"></Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsDefending}" Value="True">
+                                    <Setter Property="Background" Value="#FFF06A6A"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.RowStyle>
+                    <DataGrid.Columns>
+
+
+                        <DataGridTemplateColumn  >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Path Visibility="{Binding  IsInPossesion, Converter={StaticResource FootballVisibility} }" Data="M16,10.700002L21.599976,14.800001 19.5,21.300001 12.599976,21.300001 10.5,14.800001z M12.299988,2.7999997C9.0999756,3.7000012,6.3999634,5.7000017,4.5999756,8.4000024L6.5999756,8.0000009 7.0999756,13.1 3.5999756,16.999998 2.2999878,15.600004 2.2999878,15.999998C2.2999878,19.200003,3.3999634,22.100004,5.2000122,24.5L5.5,22.600004 10.399963,23.700005 13.099976,28.100006 11.299988,29C12.799988,29.5 14.399963,29.900001 16.099976,29.900001 17.799988,29.900001 19.399963,29.600006 20.899963,29L18.899963,28 21.599976,23.600006 26.5,22.499998 26.799988,24.400001C28.599976,22.100004,29.700012,19.100004,29.700012,15.9L29.700012,15.499998 28.399963,16.9 24.899963,13.000002 25.5,8.0000009 27.5,8.4000024C25.700012,5.7000017,23,3.7000012,19.799988,2.7999997L20.700012,4.5000004 16,6.5000009 11.299988,4.5000004z M16,0C24.799988,5.7852276E-08 32,7.2000017 32,15.999998 32,24.800003 24.799988,32 16,32 7.2000122,32 0,24.800003 0,15.999998 0,7.2000017 7.2000122,5.7852276E-08 16,0z" Stretch="Uniform" Fill="#FF1D1C2C" Width="20" Height="20" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn  >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Path Visibility="{Binding IsDefending , Converter={StaticResource FootballVisibility} }" Data="M26.913076,16.877954L29.945995,16.877954 29.374012,19.000006 27.371065,19.000006z M21.913076,16.877954L24.945995,16.877954 24.374012,19.000006 22.371065,19.000006z M7.5130115,16.877954L10.546052,16.877954 9.9740443,19.000006 7.9710174,19.000006z M3.2569926,16.877954L6.2900338,16.877954 5.7180262,19.000006 3.7149992,19.000006z M2.0696598,13.354006L2.0932617,13.426301C2.1800339,13.658353 2.3289104,13.878293 2.5407872,14.090921 2.7127891,14.263924 2.9407914,14.359925 3.1797938,14.359925L30.003057,14.359925 30.003057,13.354006z M9.5641599,7.9045923L3.0847931,11.199881C3.0315423,11.226881,2.9798856,11.255741,2.92994,11.286339L2.828959,11.354006 12.923133,11.354006z M12.936332,6.1895657L11.430538,6.9553857 15.714625,11.354006 18.065902,11.354006z M16.604927,4.3237844L14.810767,5.2362618 20.849681,11.317125 20.882694,11.354006 30.003057,11.354006 30.003057,7.001822C29.836055,5.7128038 29.452053,4.856792 28.942047,4.6487889 28.472042,4.4527864 27.817035,4.7697906 27.613035,4.9117928 23.917997,9.3818552 18.597946,5.7038035 16.843929,4.4887867z M20.901311,2.0876713L18.64014,3.2872915 18.769813,3.3719397C18.946558,3.4856892,19.124256,3.5966811,19.302593,3.7039342L19.328685,3.7193146 21.515346,2.5247087z M20.9321,1.9073486E-05C21.238607,-0.0015411377,21.544658,0.091314316,21.807361,0.27751732L23.324447,1.3576097C23.749471,1.660635 23.982484,2.1516771 23.952484,2.6717205 23.921482,3.189765 23.629465,3.6488037 23.173439,3.8988252L21.556804,4.782083 21.720838,4.835217C23.321254,5.3186812 24.860445,5.1414208 26.11202,3.5877743 26.425022,3.1857681 27.924037,2.2867556 29.392051,2.6927614 30.834066,3.0937672 31.709074,4.4807868 31.996076,6.8168192L32.003076,6.9388208 32.003076,15.255938C32.003076,15.864946,31.510072,16.359953,30.905067,16.359953L3.1797938,16.359953C2.4047861,16.359953 1.6737789,16.054949 1.1237738,15.501941 -0.016237646,14.357925 -0.30024046,12.893904 0.32376588,11.380883 0.66776907,10.545871 1.3287756,9.8468617 2.1827841,9.4148558L15.769344,2.5460491 20.236274,0.17550945C20.455036,0.059561729,20.693706,0.0012321472,20.9321,1.9073486E-05z"  Stretch="Uniform" Fill="#FF1D1C2C" Width="20" Height="20" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Binding="{Binding Name}"></DataGridTextColumn>
+
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+
+
 
         </StackPanel>
+        <StackPanel  Grid.Column="2" Margin="10" >
+
+            <DataGrid x:Name="MatchDataGrid"  CanUserResizeColumns="False"  AutoGenerateColumns="False" IsReadOnly="True"   ItemsSource="{Binding Log}" >
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="TimeLeft" Binding="{Binding MinuteLeft}"/>
+
+                    <DataGridTextColumn x:Name="HomePlayerNameColumn" Header="Player" Binding="{Binding PlayerHome}"  />
+                    <DataGridTextColumn x:Name="ActionColumn" Header="Action" Binding="{Binding Action}"/>
+                    <DataGridTextColumn x:Name="GuestPlayerNameColumn" Header="Player" Binding="{Binding PlayerGuest}" />
+
+                </DataGrid.Columns>
+
+            </DataGrid>
+        </StackPanel>
+
+
 
     </Grid>
 </Window>
